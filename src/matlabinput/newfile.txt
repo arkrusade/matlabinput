@@ -1,0 +1,15 @@
+file stuff
+ui for selecting input files
+selecting output as jpg or custom, usable (java) files
+going from one file to the next
+changing point size, line size
+overlap with next file
+size of graph to fit screenx
+
+spike stuff
+finding spikes via derivatives
+height and width of spike
+max and min
+overlap with next set of spikes
+arrows to go to next spike
+
