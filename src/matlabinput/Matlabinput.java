@@ -38,25 +38,80 @@ public class Matlabinput {
             double[] voltages = temp[0];
 
             double[] xs = new double[voltages.length];
+            double[] x10 = new double[voltages.length / 10];
             double[] deltas = new double[voltages.length];
-            ArrayList<Integer> sigs = new ArrayList();
-            for (int i = 0; i < voltages.length; i++) {
+            double[] deltas10 = new double[voltages.length / 10];
+//            ArrayList<Integer> sigs = new ArrayList();
+            double[] spikes = new double[voltages.length];
+            double[] ends = new double[voltages.length];
+            boolean spiked = false;
+            boolean upwards = false;
+            int step = 0;
+            double d, d10;
+            d10 = 0;
+            //0 is not spike, 1 is spike started, 2 is first peak, 3 is from peak to peak, 4 is second peak, 5 is from peak to reverse
+            for (int i = 1; i < voltages.length; i++) {
                 xs[i] = i;
-                if (i != voltages.length - 1) {
-                    double d = voltages[i + 1] - voltages[i];
-                    deltas[i] = d;
-                    if(d >= .001) {
-                        sigs.add(i);
+
+                d = voltages[i] - voltages[i - 1];
+                deltas[i] = d;
+                if (i % 10 == 0) {
+                    d10 = voltages[i] - voltages[i - 10];
+                    x10[i / 10] = i;
+                    deltas10[i / 10] = d10;
+                    if (step == 4 && (d10 > 0 == upwards)) {
+                        step = 5;
+                    } else if (step == 5 && (d10 < 0 == upwards)) {
+//                    ends[i] = 1;
+                        step = 0;
+                        spiked = false;
                     }
                 }
+
+                if (Math.abs(d) >= .005) {
+                    spikes[i] = .15 * d / Math.abs(d);
+                    if (step == 0) {//to go to step 1, must have large diff and not in spike
+                        spiked = true;
+                        upwards = d > 0;//if spike initially positive, upwards is true, else false
+                        step = 1;
+                    } else if (step == 2 && (d10 < 0 == upwards)) {//to go to step 3, must be in opposite direction with large diff
+                        step = 3;
+                    }
+                } else if (spiked) {//to go to step 2 or 4, must be small diff
+                    if (step == 3 || step == 1) {
+                        step++;
+                    }
+                }
+                ends[i] = (double) step / 50.0;
+
             }
-            for (Integer sig : sigs) {
-                System.out.println(sig);
+//            for (Integer sig : sigs) {
+//                System.out.println(sig);
+//            }
+            try {
+                XYSet voltage = new XYSet("Voltage", xs, voltages);
+                XYSet deltaSet = new XYSet("Deltas", xs, deltas);
+                XYSet delta10Set = new XYSet("Delta10", x10, deltas10);
+                XYSet spikeSet = new XYSet("Spikes", xs, spikes);
+                XYSet endSet = new XYSet("Ends", xs, ends);
+
+                ArrayList<XYSet> dataSet = new ArrayList();
+                dataSet.add(voltage);
+                dataSet.add(deltaSet);
+                dataSet.add(delta10Set);
+                dataSet.add(endSet);
+//                dataSet.add(spikeSet);
+                XYLineChart_AWT chart = new XYLineChart_AWT("title", "Time", "yLabel", dataSet);
+                chart.prepareChart();
+                chart.setSize(new java.awt.Dimension(1920, 1080));
+                RefineryUtilities.centerFrameOnScreen(chart);
+                chart.setVisible(true);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
-            
-            showGraph("Time", xs, "Voltage", voltages);
-            showGraph("Time", xs, "Deltas", deltas);
-            
+
+//            showGraph("Time", xs, "Voltage", voltages);
+//            showGraph("Time", xs, "Deltas", deltas);
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (IOException e) {
@@ -67,7 +122,7 @@ public class Matlabinput {
 
     public static void showGraph(String XString, double[] x, String YString, double[] y) {
         try {
-            XYLineChart_AWT chart = new XYLineChart_AWT(XString, x, YString, y);
+            XYLineChart_AWT chart = new XYLineChart_AWT("Fancy Title", XString, x, YString, y);
             chart.setSize(new java.awt.Dimension(1920, 1080));
             RefineryUtilities.centerFrameOnScreen(chart);
             chart.setVisible(true);
@@ -75,5 +130,5 @@ public class Matlabinput {
             System.out.println(e.getMessage());
         }
     }
-    
+
 }

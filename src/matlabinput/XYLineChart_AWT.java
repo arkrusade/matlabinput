@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -19,34 +20,40 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 
 public class XYLineChart_AWT extends ApplicationFrame {
 
-    private String XString, YString, title;
-    private double[] x, y;
-    private int samples, datasets;
-    private double[][] coords;
+    private String title, xLabel, yLabel;
+    private ArrayList<XYSet> data;//list of datasets
     private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 
-    public XYLineChart_AWT(String XString, double[] x, String YString, double[] y) throws InstantiationException {
-        super(YString + " vs." + XString);
+    public XYLineChart_AWT(String title, String xLabel, double[] x, String yLabel, double[] y) throws InstantiationException {
+        super(title);
         if (x.length != y.length) {
-            throw new InstantiationException("X set must be the same size as Y set");
+            throw new InstantiationException("X set:"+xLabel+" must be the same size as Y set:"+yLabel+".");
         }
-        samples = x.length;
-        this.XString = XString;
-        this.YString = YString;
-        title = XString + " vs." + YString;
-        this.x = x;
-        this.y = y;
-        datasets = 1;
-        defaultRenderer();
-        prepareChart();
+        XYSet init = new XYSet(yLabel + " vs." + xLabel, x, y);
+        data.add(init);
+
+        this.title = title;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+
+        renderer = defaultRenderer();
+    }
+
+    public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYSet> set) {
+        super(title);
+        data = set;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+
+        renderer = defaultRenderer();
     }
 
     public void prepareChart() {
         JFreeChart xylineChart = ChartFactory.createXYLineChart(
                 title,
-                XString,
-                YString,
-                createDataset(),
+                xLabel,
+                yLabel,
+                getXYDataset(),
                 PlotOrientation.VERTICAL,
                 true, true, false);
 
@@ -65,42 +72,38 @@ public class XYLineChart_AWT extends ApplicationFrame {
         return renderer;
     }
 
-    public void addDataset(double[] x, double[] y) {
-        
+    public void addXYSet(XYSet set) {
+        data.add(set);
     }
 
-    private XYDataset createDataset() {
-        final XYSeries data = new XYSeries(YString);
-        for (int i = 0; i < samples; i++) {
-            data.add(x[i], y[i]);
-        }
-
-//        final XYSeries chrome = new XYSeries("Chrome");
-//        chrome.add(1.0, 4.0);
-//        chrome.add(2.0, 5.0);
-//        chrome.add(3.0, 6.0);
-//
-//        final XYSeries iexplorer = new XYSeries("InternetExplorer");
-//        iexplorer.add(3.0, 4.0);
-//        iexplorer.add(4.0, 5.0);
-//        iexplorer.add(5.0, 4.0);
+    private XYDataset getXYDataset() {
         final XYSeriesCollection dataset = new XYSeriesCollection();
-        dataset.addSeries(data);
-//      dataset.addSeries( chrome );          
-//      dataset.addSeries( iexplorer );
+        data.stream().forEach((dataSeries) -> {
+            dataset.addSeries(dataSeries.toSeries());
+        });
         return dataset;
     }
 
-    private void defaultRenderer() {
-        renderer.setSeriesPaint(0, Color.RED);
+    private static XYLineAndShapeRenderer defaultRenderer() {
+        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         double size = 0.0;
         double delta = size / 2;
+        double size1 = 2.0;
+        double delta1 = size1 / 2;
         Shape smallDot = new Ellipse2D.Double(-delta, -delta, size, size);
+        Shape dot = new Ellipse2D.Double(-delta1, -delta1, size1, size1);
         renderer.setSeriesShape(0, smallDot);
-//      renderer.setSeriesPaint( 1 , Color.GREEN );
-//      renderer.setSeriesPaint( 2 , Color.YELLOW );
+        renderer.setSeriesShape(1, dot);
+        renderer.setSeriesShape(2, dot);
+        renderer.setSeriesShape(3, dot);
+        renderer.setSeriesPaint(0, Color.RED);
+        renderer.setSeriesPaint(1, Color.GREEN);
+        renderer.setSeriesPaint(2, Color.YELLOW);
+        renderer.setSeriesPaint(3, Color.MAGENTA);
         renderer.setSeriesStroke(0, new BasicStroke(.5f));
-//      renderer.setSeriesStroke( 1 , new BasicStroke( 2.0f ) );
-//      renderer.setSeriesStroke( 2 , new BasicStroke( 2.0f ) );
+        renderer.setSeriesStroke(1, new BasicStroke(.0f));
+        renderer.setSeriesStroke(2, new BasicStroke(0f));
+        renderer.setSeriesStroke(3, new BasicStroke(.5f));
+        return renderer;
     }
 }

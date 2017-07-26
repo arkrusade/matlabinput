@@ -5,27 +5,35 @@
  */
 package matlabinput;
 
+import org.jfree.data.xy.XYDataset;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+
 /**
  *
  * @author Justin Lee
  */
-public class Dataset {
+public class XYSet {
 
-    private String title, xTitle, yTitle;
+    private String name;
     private double[][] data;
 
-    public Dataset(String xTitle, double[] x, String yTitle, double[] y) throws InstantiationException {
+    public XYSet(String name, double[] x, double[] y) throws InstantiationException {
         if (x.length != y.length) {
-            throw new InstantiationException("X set must be the same size as Y set");
+            throw new InstantiationException("X set must be the same size as Y set:"+name+".");
         }
-        this.xTitle = xTitle;
-        this.yTitle = yTitle;
-        title = xTitle + " vs." + yTitle;
+        this.name = name;
         data = new double[2][x.length];
         data[0] = x;
         data[1] = y;
     }
-
+    public XYSeries toSeries() {
+        final XYSeries series = new XYSeries(name);
+        for (int i = 0; i < data[0].length; i++) {
+            series.add(data[0][i], data[1][i]);
+        }
+        return series;
+    }
     public double[] getXSet() {
         return data[0];
     }
@@ -56,28 +64,12 @@ public class Dataset {
         this.data = data;
     }
 
-    public String getTitle() {
-        return title;
+    public String getName() {
+        return name;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getXTitle() {
-        return xTitle;
-    }
-
-    public void setXTitle(String xTitle) {
-        this.xTitle = xTitle;
-    }
-
-    public String getYTitle() {
-        return yTitle;
-    }
-
-    public void setYTitle(String yTitle) {
-        this.yTitle = yTitle;
+    public void setName(String name) {
+        this.name = name;
     }
 
 }
