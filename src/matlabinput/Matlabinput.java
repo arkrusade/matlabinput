@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import org.jfree.ui.RefineryUtilities;
@@ -35,31 +36,27 @@ public class Matlabinput {
             MLDouble voltMAT = (MLDouble) x.getField("voltage");
             double[][] temp = voltMAT.getArray();
             double[] voltages = temp[0];
-            
-            double[] xs = new double[voltages.length];
-            for (int i = 0; i < voltages.length; i++) {
-                xs[i] = i;                
-            }
-            showGraph("Time", xs, "Voltage", voltages);
-            
-//            for (int j = 0; j < samples[0].length; j++) {
-//                System.out.print(samples[0][j] + "\t");
-//            }
-//            System.out.println("");
-//            double max, min;
-//            max = xValues[0][0];
-//            min = max;
-//            for (int j = 0; j < xValues[0].length; j++) {
-//                double d = xValues[0][j];
-//                max = Math.max(max, d);
-//                min = Math.min(min, d);
-//                if (Math.abs(d) > .2) {
-//                    System.out.print(j + ":" + d + "\t");
-//                }
-//            }
-//            System.out.println("");
-//            System.out.println(max + ":" + min);
 
+            double[] xs = new double[voltages.length];
+            double[] deltas = new double[voltages.length];
+            ArrayList<Integer> sigs = new ArrayList();
+            for (int i = 0; i < voltages.length; i++) {
+                xs[i] = i;
+                if (i != voltages.length - 1) {
+                    double d = voltages[i + 1] - voltages[i];
+                    deltas[i] = d;
+                    if(d >= .001) {
+                        sigs.add(i);
+                    }
+                }
+            }
+            for (Integer sig : sigs) {
+                System.out.println(sig);
+            }
+            
+            showGraph("Time", xs, "Voltage", voltages);
+            showGraph("Time", xs, "Deltas", deltas);
+            
         } catch (FileNotFoundException e) {
             System.out.println("File not found");
         } catch (IOException e) {
@@ -78,5 +75,5 @@ public class Matlabinput {
             System.out.println(e.getMessage());
         }
     }
-
+    
 }

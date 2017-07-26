@@ -21,8 +21,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
     private String XString, YString, title;
     private double[] x, y;
-    private int samples;
+    private int samples, datasets;
     private double[][] coords;
+    private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
 
     public XYLineChart_AWT(String XString, double[] x, String YString, double[] y) throws InstantiationException {
         super(YString + " vs." + XString);
@@ -35,6 +36,12 @@ public class XYLineChart_AWT extends ApplicationFrame {
         title = XString + " vs." + YString;
         this.x = x;
         this.y = y;
+        datasets = 1;
+        defaultRenderer();
+        prepareChart();
+    }
+
+    public void prepareChart() {
         JFreeChart xylineChart = ChartFactory.createXYLineChart(
                 title,
                 XString,
@@ -45,19 +52,21 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
         ChartPanel chartPanel = new ChartPanel(xylineChart);
         final XYPlot plot = xylineChart.getXYPlot();
-        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-      renderer.setSeriesPaint( 0 , Color.RED );
-      double size = 0.0;
-      double delta = size/2;
-      Shape smallDot = new Ellipse2D.Double(-delta, -delta, size, size);
-      renderer.setSeriesShape(0, smallDot);
-//      renderer.setSeriesPaint( 1 , Color.GREEN );
-//      renderer.setSeriesPaint( 2 , Color.YELLOW );
-        renderer.setSeriesStroke(0, new BasicStroke(.5f));
-//      renderer.setSeriesStroke( 1 , new BasicStroke( 2.0f ) );
-//      renderer.setSeriesStroke( 2 , new BasicStroke( 2.0f ) );
+
         plot.setRenderer(renderer);
         setContentPane(chartPanel);
+    }
+
+    public void setRenderer(XYLineAndShapeRenderer newRenderer) {
+        renderer = newRenderer;
+    }
+
+    public XYLineAndShapeRenderer getRenderer() {
+        return renderer;
+    }
+
+    public void addDataset(double[] x, double[] y) {
+        
     }
 
     private XYDataset createDataset() {
@@ -82,17 +91,16 @@ public class XYLineChart_AWT extends ApplicationFrame {
         return dataset;
     }
 
-    public static void main(String[] args) {
-        double[] x = {1.0, 2.1, 3.2};
-        double[] y = {3, 1, 4};
-
-        try {
-            XYLineChart_AWT chart = new XYLineChart_AWT("XString", x, "YString", y);
-            chart.setSize(new java.awt.Dimension(560, 367));
-            RefineryUtilities.centerFrameOnScreen(chart);
-            chart.setVisible(true);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    private void defaultRenderer() {
+        renderer.setSeriesPaint(0, Color.RED);
+        double size = 0.0;
+        double delta = size / 2;
+        Shape smallDot = new Ellipse2D.Double(-delta, -delta, size, size);
+        renderer.setSeriesShape(0, smallDot);
+//      renderer.setSeriesPaint( 1 , Color.GREEN );
+//      renderer.setSeriesPaint( 2 , Color.YELLOW );
+        renderer.setSeriesStroke(0, new BasicStroke(.5f));
+//      renderer.setSeriesStroke( 1 , new BasicStroke( 2.0f ) );
+//      renderer.setSeriesStroke( 2 , new BasicStroke( 2.0f ) );
     }
 }
