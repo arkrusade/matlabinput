@@ -5,6 +5,9 @@
  */
 package matlabinput;
 
+import java.awt.Color;
+import java.awt.Shape;
+import java.awt.geom.Ellipse2D;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -17,16 +20,20 @@ public class XYSet {
 
     private String name;
     private double[][] data;
+    Shape dotShape;
+    Color lineColor;
+    float lineSize;
 
     public XYSet(String name, double[] x, double[] y) throws InstantiationException {
         if (x.length != y.length) {
-            throw new InstantiationException("X set must be the same size as Y set:"+name+".");
+            throw new InstantiationException("X set must be the same size as Y set:" + name + ".");
         }
         this.name = name;
         data = new double[2][x.length];
         data[0] = x;
         data[1] = y;
     }
+
     public XYSeries toSeries() {
         final XYSeries series = new XYSeries(name);
         for (int i = 0; i < data[0].length; i++) {
@@ -34,6 +41,7 @@ public class XYSet {
         }
         return series;
     }
+
     public double[] getXSet() {
         return data[0];
     }

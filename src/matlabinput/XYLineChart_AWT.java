@@ -5,6 +5,7 @@ import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
+import javax.sql.rowset.spi.SyncProvider;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -23,11 +24,20 @@ public class XYLineChart_AWT extends ApplicationFrame {
     private String title, xLabel, yLabel;
     private ArrayList<XYSet> data;//list of datasets
     private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
+    static Shape smallDot = new Ellipse2D.Double(0, 0, 0, 0);
+    static Shape dot = new Ellipse2D.Double(-1, -1, 2, 2);
+    static Color[] defaultColors = {
+        Color.RED,
+        Color.BLUE,
+        Color.GREEN,
+        Color.YELLOW,
+        Color.MAGENTA
+    };
 
     public XYLineChart_AWT(String title, String xLabel, double[] x, String yLabel, double[] y) throws InstantiationException {
         super(title);
         if (x.length != y.length) {
-            throw new InstantiationException("X set:"+xLabel+" must be the same size as Y set:"+yLabel+".");
+            throw new InstantiationException("X set:" + xLabel + " must be the same size as Y set:" + yLabel + ".");
         }
         XYSet init = new XYSet(yLabel + " vs." + xLabel, x, y);
         data.add(init);
@@ -36,7 +46,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
-        renderer = defaultRenderer();
+        renderer = defaultRenderer(this);
     }
 
     public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYSet> set) {
@@ -45,7 +55,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
-        renderer = defaultRenderer();
+        renderer = defaultRenderer(this);
     }
 
     public void prepareChart() {
@@ -84,26 +94,13 @@ public class XYLineChart_AWT extends ApplicationFrame {
         return dataset;
     }
 
-    private static XYLineAndShapeRenderer defaultRenderer() {
+    private static XYLineAndShapeRenderer defaultRenderer(XYLineChart_AWT instance) {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        double size = 0.0;
-        double delta = size / 2;
-        double size1 = 2.0;
-        double delta1 = size1 / 2;
-        Shape smallDot = new Ellipse2D.Double(-delta, -delta, size, size);
-        Shape dot = new Ellipse2D.Double(-delta1, -delta1, size1, size1);
-        renderer.setSeriesShape(0, smallDot);
-        renderer.setSeriesShape(1, dot);
-        renderer.setSeriesShape(2, dot);
-        renderer.setSeriesShape(3, dot);
-        renderer.setSeriesPaint(0, Color.RED);
-        renderer.setSeriesPaint(1, Color.GREEN);
-        renderer.setSeriesPaint(2, Color.YELLOW);
-        renderer.setSeriesPaint(3, Color.MAGENTA);
-        renderer.setSeriesStroke(0, new BasicStroke(.5f));
-        renderer.setSeriesStroke(1, new BasicStroke(.0f));
-        renderer.setSeriesStroke(2, new BasicStroke(0f));
-        renderer.setSeriesStroke(3, new BasicStroke(.5f));
+        for (int i = 0; i < instance.data.size(); i++) {
+            renderer.setSeriesShape(i, dot);
+            renderer.setSeriesPaint(i, defaultColors[i%defaultColors.length]);
+            renderer.setSeriesStroke(i, new BasicStroke(.5f));
+        }
         return renderer;
     }
 }
