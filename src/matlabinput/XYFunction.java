@@ -16,7 +16,7 @@ import org.jfree.data.xy.XYSeriesCollection;
  *
  * @author Justin Lee
  */
-public class XYSet {
+public class XYFunction {
 
     private String name;
     private double[][] data;
@@ -24,7 +24,7 @@ public class XYSet {
     Color lineColor;
     float lineSize;
 
-    public XYSet(String name, double[] x, double[] y) throws InstantiationException {
+    public XYFunction(String name, double[] x, double[] y) throws InstantiationException {
         if (x.length != y.length) {
             throw new InstantiationException("X set must be the same size as Y set:" + name + ".");
         }

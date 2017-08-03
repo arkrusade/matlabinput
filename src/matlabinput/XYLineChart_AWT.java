@@ -22,7 +22,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 public class XYLineChart_AWT extends ApplicationFrame {
 
     private String title, xLabel, yLabel;
-    private ArrayList<XYSet> data;//list of datasets
+    private ArrayList<XYFunction> data;//list of datasets
     private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
     static Shape smallDot = new Ellipse2D.Double(0, 0, 0, 0);
     static Shape dot = new Ellipse2D.Double(-1, -1, 2, 2);
@@ -39,7 +39,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         if (x.length != y.length) {
             throw new InstantiationException("X set:" + xLabel + " must be the same size as Y set:" + yLabel + ".");
         }
-        XYSet init = new XYSet(yLabel + " vs." + xLabel, x, y);
+        XYFunction init = new XYFunction(yLabel + " vs." + xLabel, x, y);
         data.add(init);
 
         this.title = title;
@@ -49,7 +49,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         renderer = defaultRenderer(this);
     }
 
-    public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYSet> set) {
+    public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYFunction> set) {
         super(title);
         data = set;
         this.xLabel = xLabel;
@@ -82,7 +82,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         return renderer;
     }
 
-    public void addXYSet(XYSet set) {
+    public void addXYSet(XYFunction set) {
         data.add(set);
     }
 
