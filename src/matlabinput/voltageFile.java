@@ -18,52 +18,55 @@ import java.util.ArrayList;
  * @author Justin Lee
  */
 public class voltageFile {
+
     private final String name;
     private final double samplesPerSecond;
     private double[] voltages;
-    private ArrayList<int[]> spikes;
+    private ArrayList<Spike> spikes;
     ArrayList<XYFunction> data;
 
-    
-    //TODO: check these for errors when input from mfr file
-    //ie: that voltage and Samp_Rate exist, and are proper variable types
-    public static voltageFile fromFile(File file) throws IOException {
-            MatFileReader mfr = new MatFileReader(file);
-            MLStructure x = (MLStructure) mfr.getContent().get("x");
-            MLDouble voltMAT = (MLDouble) x.getField("voltage");
-            MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
-            double samplesPerSecond = sampleRate.getArray()[0][0];
-            double[] voltages = voltMAT.getArray()[0];
-            return new voltageFile(file.getName(), samplesPerSecond, voltages);
-    }
-    public static voltageFile fromString(String fileName) throws IOException {
-            MatFileReader mfr = new MatFileReader(fileName);
-            MLStructure x = (MLStructure) mfr.getContent().get("x");
-            MLDouble voltMAT = (MLDouble) x.getField("voltage");
-            MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
-            double samplesPerSecond = sampleRate.getArray()[0][0];
-            double[] voltages = voltMAT.getArray()[0];
-            return new voltageFile(fileName, samplesPerSecond, voltages);    
-    }
     public voltageFile(String name, double samplesPerSecond, double[] voltages) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         this.voltages = voltages;
+        this.findSpikes();
     }
 
-    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<int[]> spikes) {
+    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         this.voltages = voltages;
         this.spikes = spikes;
     }
 
-    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<int[]> spikes, ArrayList<XYFunction> extras) {
+    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> extras) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         this.voltages = voltages;
         this.spikes = spikes;
         this.data = extras;
+    }
+
+//TODO: check these for errors when input from mfr file
+    //ie: that voltage and Samp_Rate exist, and are proper variable types
+    public static voltageFile fromFile(File file) throws IOException {
+        MatFileReader mfr = new MatFileReader(file);
+        MLStructure x = (MLStructure) mfr.getContent().get("x");
+        MLDouble voltMAT = (MLDouble) x.getField("voltage");
+        MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
+        double samplesPerSecond = sampleRate.getArray()[0][0];
+        double[] voltages = voltMAT.getArray()[0];
+        return new voltageFile(file.getName(), samplesPerSecond, voltages);
+    }
+
+    public static voltageFile fromString(String fileName) throws IOException {
+        MatFileReader mfr = new MatFileReader(fileName);
+        MLStructure x = (MLStructure) mfr.getContent().get("x");
+        MLDouble voltMAT = (MLDouble) x.getField("voltage");
+        MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
+        double samplesPerSecond = sampleRate.getArray()[0][0];
+        double[] voltages = voltMAT.getArray()[0];
+        return new voltageFile(fileName, samplesPerSecond, voltages);
     }
 
     public String getName() {
@@ -73,7 +76,7 @@ public class voltageFile {
     public double getSamplesPerSecond() {
         return samplesPerSecond;
     }
-    
+
     public double[] getVoltages() {
         return voltages;
     }
@@ -82,13 +85,13 @@ public class voltageFile {
         this.voltages = voltages;
     }
 
-    public void findSpikes() {
+    private void findSpikes() {
 
         double[] xs = new double[voltages.length];//stores time values (x-dim)
 //            double[] x10 = new double[voltages.length / 10];//stores every tenth time value
 //            double[] deltas = new double[voltages.length];//stores every delta-y
 //            double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
-        ArrayList<int[]> findingSpikes = new ArrayList();//stores every spike, with array of important times for spike
+        ArrayList<Spike> findingSpikes = new ArrayList();//stores every spike, with array of important times for spike
         //TODO: ensure that each int[] is same length
         //    0       1           2               3
         //    start   first peak  second peak     end
@@ -115,7 +118,7 @@ public class voltageFile {
                 } else if (step == 5 && (d10 < 0 == upwards)) {//end of spike
                     step = 0;
                     spiked = false;
-                    findingSpikes.get(findingSpikes.size() - 1)[3] = i;
+                    findingSpikes.get(findingSpikes.size() - 1).setStep(3, i);
                 }
             }
 
@@ -123,8 +126,8 @@ public class voltageFile {
 //                    sigdiffs[i] = .15 * d / Math.abs(d);
                 if (step == 0) {//to go to step 1, must have large diff and not in spike
                     spiked = true;
-                    int[] newSpike = new int[2];
-                    newSpike[0] = i;
+                    Spike newSpike = new Spike();
+                    newSpike.setStart(i);
                     findingSpikes.add(newSpike);
                     upwards = d > 0;//if spike initially positive, upwards is true, else false
                     step = 1;
@@ -134,7 +137,7 @@ public class voltageFile {
             } else if (spiked) {//to go to step 2 or 4, must be small diff
                 if (step == 1 || step == 3) {
                     step++;
-                    findingSpikes.get(findingSpikes.size() - 1)[step / 2] = i;//1 for first peak, 2 for second peak
+                    findingSpikes.get(findingSpikes.size() - 1).setStep(step / 2, i);//1 for first peak, 2 for second peak
                 }
             }
 //                steps[i] = (double) step / 50.0;
@@ -142,12 +145,13 @@ public class voltageFile {
         }
         this.spikes = findingSpikes;
     }
-    
-    public ArrayList<int[]> getSpikes() {
+
+    public ArrayList<Spike> getSpikes() {
         return spikes;
     }
 
-    public void setSpikes(ArrayList<int[]> spikes) {
+    //TODO: keep manual override?
+    public void setSpikes(ArrayList<Spike> spikes) {
         this.spikes = spikes;
     }
 
@@ -158,20 +162,21 @@ public class voltageFile {
     public void setData(ArrayList<XYFunction> data) {
         this.data = data;
     }
-    
+
     public void addData(XYFunction data) {
         this.data.add(data);
     }
+
     /**
-     * Removes the first occurrences of XYFunctions with the specified value for name in <tt>data</tt>
+     * Removes the first occurrences of XYFunctions with the specified value for
+     * name in <tt>data</tt>
      *
-     * @param  name the name of the extra to remove from <tt>data</tt>
+     * @param name the name of the extra to remove from <tt>data</tt>
      * @return <tt>true</tt> if it removes an element
      */
     public boolean removeData(String name) {
         for (XYFunction dat : data) {
-            if(dat.getName().equals(name))
-            {
+            if (dat.getName().equals(name)) {
                 data.remove(dat);
                 return true;
             }
