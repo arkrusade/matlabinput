@@ -30,13 +30,13 @@ public class voltageFile {
 //    private double[] xSet;
     private XYFunction voltageFunction;
     private ArrayList<Spike> spikes;
-    ArrayList<XYFunction> data;
+    private ArrayList<XYFunction> data = new ArrayList<>(0);
 
     public voltageFile(String name, double samplesPerSecond, double[] voltages) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         double[][] x = new double[2][voltages.length];
-        for (int i = 0; i < x.length; i++) {
+        for (int i = 0; i < voltages.length; i++) {
             x[0][i] = i;
             x[1][i] = voltages[i];
         }

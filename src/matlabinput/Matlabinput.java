@@ -34,10 +34,15 @@ public class Matlabinput {
             voltageFile second = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-28PM.mat");
             voltageFile third = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
 
-            XYLineChart_AWT chart = new XYLineChart_AWT(first, 0);
+            XYLineChart_AWT chart = new XYLineChart_AWT(first, 1);
             chart.setSize(new java.awt.Dimension(1920, 1080));
             RefineryUtilities.centerFrameOnScreen(chart);
             chart.setVisible(true);
+            chart.prepareChart();
+            
+            
+//                    showGraph("asdf", chart.data, null, y);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -49,6 +54,7 @@ public class Matlabinput {
             chart.setSize(new java.awt.Dimension(1920, 1080));
             RefineryUtilities.centerFrameOnScreen(chart);
             chart.setVisible(true);
+            chart.prepareChart();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }

@@ -22,7 +22,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 public class XYLineChart_AWT extends ApplicationFrame {
 
     private String title, xLabel, yLabel;
-    private ArrayList<XYFunction> data;//list of datasets
+    private ArrayList<XYFunction> data = new ArrayList<>(0);//list of datasets
     private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
     static Shape smallDot = new Ellipse2D.Double(0, 0, 0, 0);
     static Shape dot = new Ellipse2D.Double(-1, -1, 2, 2);
@@ -54,7 +54,6 @@ public class XYLineChart_AWT extends ApplicationFrame {
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
-        renderer = defaultRenderer(this);
     }
 
     public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYFunction> set) {
@@ -63,7 +62,6 @@ public class XYLineChart_AWT extends ApplicationFrame {
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
-        renderer = defaultRenderer(this);
     }
 
     public void prepareChart() {
