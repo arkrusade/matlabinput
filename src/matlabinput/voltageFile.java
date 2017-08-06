@@ -20,8 +20,11 @@ import java.util.ArrayList;
 public class voltageFile {
 
     private final String name;
-    private final double samplesPerSecond;
+    final static String yString = "Voltage";
+    final static String xString = "Time";
+    private double samplesPerSecond;
     private double[] voltages;
+    private double[] xSet;
     private ArrayList<Spike> spikes;
     ArrayList<XYFunction> data;
 
@@ -32,16 +35,25 @@ public class voltageFile {
         this.findSpikes();
     }
 
-    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
+    public voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
+        this.xSet = xSet;
         this.voltages = voltages;
-        this.spikes = spikes;
+        this.findSpikes();
     }
 
-    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> extras) {
+//    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
+//        this.name = name;
+//        this.samplesPerSecond = samplesPerSecond;
+//        this.voltages = voltages;
+//        this.spikes = spikes;
+//    }
+
+    private voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> extras) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
+        this.xSet = xSet;
         this.voltages = voltages;
         this.spikes = spikes;
         this.data = extras;
@@ -87,14 +99,12 @@ public class voltageFile {
 
     private void findSpikes() {
 
-        double[] xs = new double[voltages.length];//stores time values (x-dim)
+//        double[] xs = new double[voltages.length];//stores time values (x-dim)
 //            double[] x10 = new double[voltages.length / 10];//stores every tenth time value
 //            double[] deltas = new double[voltages.length];//stores every delta-y
 //            double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
         ArrayList<Spike> findingSpikes = new ArrayList();//stores every spike, with array of important times for spike
-        //TODO: ensure that each int[] is same length
-        //    0       1           2               3
-        //    start   first peak  second peak     end
+
 //            double[] sigdiffs = new double[voltages.length];
 //            double[] steps = new double[voltages.length];
 //            double[] isSpiked = new double[voltages.length];
@@ -103,10 +113,11 @@ public class voltageFile {
         int step = 0;
         double d, d10;
         d10 = 0;
+
+        //when step is this value: 
         //0 is not spike, 1 is spike started, 2 is first peak, 3 is from peak to peak, 4 is second peak, 5 is from peak to reverse
         for (int i = 1; i < voltages.length; i++) {
-            xs[i] = i;
-
+//            xs[i] = i;
             d = voltages[i] - voltages[i - 1];
 //                deltas[i] = d;
             if (i % 10 == 0) {//in tenth time value

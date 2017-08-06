@@ -34,6 +34,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
         Color.MAGENTA
     };
 
+    public XYLineChart_AWT(voltageFile file) {
+        this(file.getName(), voltageFile.xString, voltageFile.yString, file.getData());
+    }
     public XYLineChart_AWT(String title, String xLabel, double[] x, String yLabel, double[] y) throws InstantiationException {
         super(title);
         if (x.length != y.length) {
