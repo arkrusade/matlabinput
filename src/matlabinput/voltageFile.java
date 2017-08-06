@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -19,29 +21,33 @@ import java.util.ArrayList;
  */
 public class voltageFile {
 
-    private final String name;
     final static String yString = "Voltage";
     final static String xString = "Time";
+
+    private final String name;
     private double samplesPerSecond;
-    private double[] voltages;
-    private double[] xSet;
+//    private double[] voltages;
+//    private double[] xSet;
+    private XYFunction voltageFunction;
     private ArrayList<Spike> spikes;
     ArrayList<XYFunction> data;
 
     public voltageFile(String name, double samplesPerSecond, double[] voltages) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
-        this.voltages = voltages;
+        double[][] x = new double[2][voltages.length];
+        for (int i = 0; i < x.length; i++) {
+            x[0][i] = i;
+            x[1][i] = voltages[i];
+        }
+        this.voltageFunction = new XYFunction("Voltages", x);
         this.findSpikes();
     }
-
-    public voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages) {
-        this.name = name;
-        this.samplesPerSecond = samplesPerSecond;
-        this.xSet = xSet;
-        this.voltages = voltages;
-        this.findSpikes();
-    }
+//
+//    public voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages) {
+//        this(name, samplesPerSecond, xSet, voltages, new ArrayList<>(0), new ArrayList<>(0));
+//        this.findSpikes();
+//    }
 
 //    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
 //        this.name = name;
@@ -49,14 +55,16 @@ public class voltageFile {
 //        this.voltages = voltages;
 //        this.spikes = spikes;
 //    }
+    private voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> data) throws InstantiationException {
+        this(name, samplesPerSecond, new XYFunction(voltageFile.yString, xSet, voltages), spikes, data);
+    }
 
-    private voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> extras) {
+    public voltageFile(String name, double samplesPerSecond, XYFunction voltageFunction, ArrayList<Spike> spikes, ArrayList<XYFunction> data) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
-        this.xSet = xSet;
-        this.voltages = voltages;
+        this.voltageFunction = voltageFunction;
         this.spikes = spikes;
-        this.data = extras;
+        this.data = data;
     }
 
 //TODO: check these for errors when input from mfr file
@@ -89,16 +97,24 @@ public class voltageFile {
         return samplesPerSecond;
     }
 
-    public double[] getVoltages() {
-        return voltages;
+    public XYFunction getVoltageFunction() {
+        return voltageFunction;
     }
 
-    public void setVoltages(double[] voltages) {
-        this.voltages = voltages;
+    public void setVoltageFunction(XYFunction voltageFunction) {
+        this.voltageFunction = voltageFunction;
+    }
+
+    public double[] getVoltages() {
+        return voltageFunction.getYSet();
+    }
+
+    public void setVoltages(double[] voltages) throws IllegalArgumentException {
+        this.voltageFunction.setYSet(voltages);
     }
 
     private void findSpikes() {
-
+        double[] voltages = getVoltages();
 //        double[] xs = new double[voltages.length];//stores time values (x-dim)
 //            double[] x10 = new double[voltages.length / 10];//stores every tenth time value
 //            double[] deltas = new double[voltages.length];//stores every delta-y
@@ -157,8 +173,27 @@ public class voltageFile {
         this.spikes = findingSpikes;
     }
 
+    public XYFunction getSpikeFunction(int step) {
+        double[][] xy = new double[2][spikes.size()];
+        for (int i = 0; i < xy[0].length; i++) {
+            xy[0][i] = spikes.get(i).getStep(step);
+            xy[1][i] = step;
+        }
+        return new XYFunction("Spikes", xy);
+    }
+
     public ArrayList<Spike> getSpikes() {
         return spikes;
+    }
+
+    //returns double[] of spikes for a specific step
+
+    public double[] getSpikes(int step) {
+        double[] spikesStep = new double[spikes.size()];
+        for (int i = 0; i < spikes.size(); i++) {
+            spikesStep[i] = spikes.get(i).getStep(step);
+        }
+        return spikesStep;
     }
 
     //TODO: keep manual override?

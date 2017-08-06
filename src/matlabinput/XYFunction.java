@@ -24,6 +24,12 @@ public class XYFunction {
     Color lineColor;
     float lineSize;
 
+    //x goes in data[0], y goes in data[1]
+    public XYFunction(String name, double[][] data) {
+        this.name = name;
+        this.data = data;
+    }
+
     public XYFunction(String name, double[] x, double[] y) throws InstantiationException {
         if (x.length != y.length) {
             throw new InstantiationException("X set must be the same size as Y set:" + name + ".");
@@ -46,9 +52,9 @@ public class XYFunction {
         return data[0];
     }
 
-    public void setXSet(double[] x) throws InstantiationException {
+    public void setXSet(double[] x) throws IllegalArgumentException {
         if (x.length != data[0].length) {
-            throw new InstantiationException("new X set must be the same size as old X set");
+            throw new IllegalArgumentException("new X set must be the same size as old X set");
         }
         this.data[0] = x;
     }
@@ -57,9 +63,9 @@ public class XYFunction {
         return data[1];
     }
 
-    public void setYSet(double[] y) throws InstantiationException {
+    public void setYSet(double[] y) throws IllegalArgumentException {
         if (y.length != data[1].length) {
-            throw new InstantiationException("new Y set must be the same size as old Y set");
+            throw new IllegalArgumentException("new Y set must be the same size as old Y set");
         }
         this.data[0] = y;
     }

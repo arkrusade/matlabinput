@@ -28,14 +28,19 @@ public class XYLineChart_AWT extends ApplicationFrame {
     static Shape dot = new Ellipse2D.Double(-1, -1, 2, 2);
     static Color[] defaultColors = {
         Color.RED,
-        Color.BLUE,
-        Color.GREEN,
+        Color.ORANGE,
         Color.YELLOW,
+        Color.GREEN,
+        Color.BLUE,
         Color.MAGENTA
     };
 
-    public XYLineChart_AWT(voltageFile file) {
+    //takes voltageFile and shows the voltage, spikes (only one step per spike), and data as visual functions
+    public XYLineChart_AWT(voltageFile file, int step) {
         this(file.getName(), voltageFile.xString, voltageFile.yString, file.getData());
+        //have to add voltage and spikes as XYFunctions
+        data.add(0, file.getVoltageFunction());
+        data.add(file.getSpikeFunction(step));
     }
     public XYLineChart_AWT(String title, String xLabel, double[] x, String yLabel, double[] y) throws InstantiationException {
         super(title);

@@ -1,3 +1,18 @@
+next step list
+get raster plot
+show it vertically aligned to voltage plot
+show multiple files at a time (raster)
+
+
+
+
+
+
+
+
+
+
+
 file stuff
 ui for selecting input files
 button to start process (diff between voltage and raster?)
