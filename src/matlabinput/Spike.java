@@ -12,6 +12,7 @@ package matlabinput;
 public class Spike {
 
     private int start, first, second, end;
+    final static int offset = 500;
 
     //TODO: check inputs
     //maybe via enum, so steps are only 1-4 and only positive + 0?
@@ -24,6 +25,10 @@ public class Spike {
         this.first = first;
         this.second = second;
         this.end = end;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 
     public void setStep(int step, int val) {

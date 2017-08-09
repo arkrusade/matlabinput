@@ -20,9 +20,9 @@ public class XYFunction {
 
     private String name;
     private double[][] data;
-    Shape dotShape;
+    Shape dotShape = new Ellipse2D.Double(-1, -1, 2, 2);
     Color lineColor;
-    float lineSize;
+    float lineSize = .5f;
 
     //x goes in data[0], y goes in data[1]
     public XYFunction(String name, double[][] data) {

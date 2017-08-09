@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.BasicStroke;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import javax.sql.rowset.spi.SyncProvider;
 
@@ -23,9 +24,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
     private String title, xLabel, yLabel;
     private ArrayList<XYFunction> data = new ArrayList<>(0);//list of datasets
-    private XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-    static Shape smallDot = new Ellipse2D.Double(0, 0, 0, 0);
-    static Shape dot = new Ellipse2D.Double(-1, -1, 2, 2);
+    private XYLineAndShapeRenderer renderer;
     static Color[] defaultColors = {
         Color.RED,
         Color.ORANGE,
@@ -39,9 +38,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
     public XYLineChart_AWT(voltageFile file, int step) {
         this(file.getName(), voltageFile.xString, voltageFile.yString, file.getData());
         //have to add voltage and spikes as XYFunctions
-        data.add(0, file.getVoltageFunction());
-        data.add(file.getSpikeFunction(step));
+
     }
+
     public XYLineChart_AWT(String title, String xLabel, double[] x, String yLabel, double[] y) throws InstantiationException {
         super(title);
         if (x.length != y.length) {
@@ -76,7 +75,12 @@ public class XYLineChart_AWT extends ApplicationFrame {
         ChartPanel chartPanel = new ChartPanel(xylineChart);
         final XYPlot plot = xylineChart.getXYPlot();
 
-        plot.setRenderer(renderer);
+        if (renderer != null) {
+
+            plot.setRenderer(renderer);
+        } else {
+            plot.setRenderer(defaultRenderer(this));
+        }
         setContentPane(chartPanel);
     }
 
@@ -92,6 +96,30 @@ public class XYLineChart_AWT extends ApplicationFrame {
         data.add(set);
     }
 
+    public String getxLabel() {
+        return xLabel;
+    }
+
+    public void setxLabel(String xLabel) {
+        this.xLabel = xLabel;
+    }
+
+    public String getyLabel() {
+        return yLabel;
+    }
+
+    public void setyLabel(String yLabel) {
+        this.yLabel = yLabel;
+    }
+
+    public ArrayList<XYFunction> getData() {
+        return data;
+    }
+
+    public void setData(ArrayList<XYFunction> data) {
+        this.data = data;
+    }
+
     private XYDataset getXYDataset() {
         final XYSeriesCollection dataset = new XYSeriesCollection();
         data.stream().forEach((dataSeries) -> {
@@ -103,9 +131,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
     private static XYLineAndShapeRenderer defaultRenderer(XYLineChart_AWT instance) {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         for (int i = 0; i < instance.data.size(); i++) {
-            renderer.setSeriesShape(i, dot);
-            renderer.setSeriesPaint(i, defaultColors[i%defaultColors.length]);
-            renderer.setSeriesStroke(i, new BasicStroke(.5f));
+            renderer.setSeriesShape(i, instance.getData().get(i).dotShape);
+            renderer.setSeriesPaint(i, instance.getData().get(i).lineColor != null ? instance.getData().get(i).lineColor : defaultColors[i % defaultColors.length]);
+            renderer.setSeriesStroke(i, new BasicStroke(instance.getData().get(i).lineSize));
         }
         return renderer;
     }

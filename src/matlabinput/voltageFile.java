@@ -115,14 +115,16 @@ public class voltageFile {
 
     private void findSpikes() {
         double[] voltages = getVoltages();
-//        double[] xs = new double[voltages.length];//stores time values (x-dim)
-//            double[] x10 = new double[voltages.length / 10];//stores every tenth time value
-//            double[] deltas = new double[voltages.length];//stores every delta-y
-//            double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
+        double[] xs = new double[voltages.length];//stores time values (x-dim)
+            double[] x10 = new double[voltages.length / 10];//stores every tenth time value
+            double[] y10 = new double[voltages.length / 10];//stores every tenth voltage value
+           
+            double[] deltas = new double[voltages.length];//stores every delta-y
+            double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
         ArrayList<Spike> findingSpikes = new ArrayList();//stores every spike, with array of important times for spike
 
-//            double[] sigdiffs = new double[voltages.length];
-//            double[] steps = new double[voltages.length];
+            double[] sigdiffs = new double[voltages.length];
+            double[] steps = new double[voltages.length];
 //            double[] isSpiked = new double[voltages.length];
         boolean spiked = false;
         boolean upwards = false;
@@ -133,13 +135,14 @@ public class voltageFile {
         //when step is this value: 
         //0 is not spike, 1 is spike started, 2 is first peak, 3 is from peak to peak, 4 is second peak, 5 is from peak to reverse
         for (int i = 1; i < voltages.length; i++) {
-//            xs[i] = i;
+            xs[i] = i;
             d = voltages[i] - voltages[i - 1];
-//                deltas[i] = d;
+                deltas[i] = d;
             if (i % 10 == 0) {//in tenth time value
                 d10 = voltages[i] - voltages[i - 10];
-//                    x10[i / 10] = i;
-//                    deltas10[i / 10] = d10;
+                    x10[i / 10] = i;
+                    y10[i/10] = voltages[i];
+                    deltas10[i / 10] = d10;
                 if (step == 4 && (d10 > 0 == upwards)) {//end of second peak
                     step = 5;
                 } else if (step == 5 && (d10 < 0 == upwards)) {//end of spike
@@ -150,7 +153,7 @@ public class voltageFile {
             }
 
             if (Math.abs(d) >= .005) {//if diff is big (either direction)
-//                    sigdiffs[i] = .15 * d / Math.abs(d);
+                    sigdiffs[i] = .15 * d / Math.abs(d);
                 if (step == 0) {//to go to step 1, must have large diff and not in spike
                     spiked = true;
                     Spike newSpike = new Spike();
@@ -167,19 +170,29 @@ public class voltageFile {
                     findingSpikes.get(findingSpikes.size() - 1).setStep(step / 2, i);//1 for first peak, 2 for second peak
                 }
             }
-//                steps[i] = (double) step / 50.0;
+                steps[i] = (double) step / 50.0;
 //                isSpiked[i] = (spiked ? 0.1 : 0);
         }
         this.spikes = findingSpikes;
+        try {
+            data.add(new XYFunction("steps", xs, steps));
+            data.add(new XYFunction("deltas", xs, deltas));
+            data.add(new XYFunction("sigdiffs", xs, sigdiffs));
+            data.add(new XYFunction("x10s", x10, y10));
+
+            data.add(new XYFunction("delta10s", x10, deltas10));
+        } catch (InstantiationException ex) {
+            Logger.getLogger(voltageFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
-    public XYFunction getSpikeFunction(int step) {
+    public XYFunction getSpikeFunction(int step, double level) {
         double[][] xy = new double[2][spikes.size()];
         for (int i = 0; i < xy[0].length; i++) {
             xy[0][i] = spikes.get(i).getStep(step);
-            xy[1][i] = step;
+            xy[1][i] = level;
         }
-        return new XYFunction("Spikes", xy);
+        return new XYFunction("Spikes: step "+step, xy);
     }
 
     public ArrayList<Spike> getSpikes() {
