@@ -50,9 +50,7 @@ public class Matlabinput {
 
             chart.prepareChart();
 
-            chart.setSize(new java.awt.Dimension(1920, 1080));
-            RefineryUtilities.centerFrameOnScreen(chart);
-            chart.setVisible(true);
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

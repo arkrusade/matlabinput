@@ -82,6 +82,10 @@ public class XYLineChart_AWT extends ApplicationFrame {
             plot.setRenderer(defaultRenderer(this));
         }
         setContentPane(chartPanel);
+//        this.setSize(new java.awt.Dimension(1920, 1080));
+        this.setExtendedState(this.getExtendedState() | java.awt.Frame.MAXIMIZED_BOTH);
+            RefineryUtilities.centerFrameOnScreen(this);
+            this.setVisible(true);
     }
 
     public void setRenderer(XYLineAndShapeRenderer newRenderer) {
