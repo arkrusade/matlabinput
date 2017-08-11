@@ -36,17 +36,24 @@ public class Matlabinput {
             voltageFile third = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
 
             XYLineChart_AWT chart = new XYLineChart_AWT(first, 1);
-            XYFunction spikes = first.getSpikeFunction(1, .7);
-            spikes.dotShape = new Rectangle2D.Double(-2, -20, 4, 40);
-            spikes.lineSize = 0;
 
-            XYFunction offset = first.getSpikeFunction(0, .5);
-            offset.dotShape = new Rectangle2D.Double(-2, -20, 4, 40);
-            offset.lineSize = 0;
+            XYFunction spikes = first.getSpikeFunction(3, .9);
+            spikes.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
+            spikes.setLineSize(0);
 
-            chart.getData().add(0, first.getVoltageFunction());
-//            chart.getData().add(spikes);
-//            chart.getData().add(offset);
+            XYFunction spikes1 = first.getSpikeFunction(1, .5);
+            spikes1.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
+            spikes1.setLineSize(0);
+
+            XYFunction spikes2 = first.getSpikeFunction(2, .7);
+            spikes2.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
+            spikes2.setLineSize(0);
+
+            XYFunction offset = first.getSpikeFunction(0, .3);
+            offset.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
+            offset.setLineSize(0);
+
+            chart.addData(0, first.getVoltageFunction(), spikes, spikes1, spikes2, offset);
 
             chart.prepareChart();
 

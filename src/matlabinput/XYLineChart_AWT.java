@@ -6,6 +6,7 @@ import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.sql.rowset.spi.SyncProvider;
 
 import org.jfree.chart.ChartPanel;
@@ -112,8 +113,19 @@ public class XYLineChart_AWT extends ApplicationFrame {
         this.yLabel = yLabel;
     }
 
-    public ArrayList<XYFunction> getData() {
-        return data;
+    public void addData(XYFunction function) {
+        data.add(function);
+    }
+
+    public void addData(int index, XYFunction function) {
+        data.add(index, function);
+    }
+
+    public void addData(XYFunction... functions) {
+        this.data.addAll(Arrays.asList(functions));
+    }
+    public void addData(int index, XYFunction... functions) {
+        this.data.addAll(index, Arrays.asList(functions));
     }
 
     public void setData(ArrayList<XYFunction> data) {
@@ -131,9 +143,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
     private static XYLineAndShapeRenderer defaultRenderer(XYLineChart_AWT instance) {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
         for (int i = 0; i < instance.data.size(); i++) {
-            renderer.setSeriesShape(i, instance.getData().get(i).dotShape);
-            renderer.setSeriesPaint(i, instance.getData().get(i).lineColor != null ? instance.getData().get(i).lineColor : defaultColors[i % defaultColors.length]);
-            renderer.setSeriesStroke(i, new BasicStroke(instance.getData().get(i).lineSize));
+            renderer.setSeriesShape(i, instance.data.get(i).getDotShape());
+            renderer.setSeriesPaint(i, instance.data.get(i).getLineColor() != null ? instance.data.get(i).getLineColor() : defaultColors[i % defaultColors.length]);
+            renderer.setSeriesStroke(i, new BasicStroke(instance.data.get(i).getLineSize()));
         }
         return renderer;
     }

@@ -11,11 +11,18 @@ package matlabinput;
  */
 public class Spike {
 
+    /*  steps signify times for:
+     0          start of spike
+     1          first peak
+     2          second peak
+     3          end of spike
+     */ 
     private int start, first, second, end;
-    final static int offset = 500;
+    final static int offset = 50;//TODO: make this related in seconds to samples per sec
 
     //TODO: check inputs
     //maybe via enum, so steps are only 1-4 and only positive + 0?
+    //TODO: add peak values
     public Spike() {
         this(-1, -1, -1, -1);
     }
