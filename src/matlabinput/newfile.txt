@@ -1,23 +1,5 @@
 next step list
-get raster plot
-show it vertically aligned to voltage plot
 show multiple files at a time (raster)
-
-
-get specific peak times
-
-1st peak
-between steps 1 and 2
-look for most same direction value 
-
-2nd peak
-between 4 and 5
-highest in opposite direction
-
-
-
-
-
 
 
 
@@ -33,18 +15,15 @@ size of graph to fit screenx
 
 spike stuff
 manual override
-max and min
 overlap with next set of spikes
 arrows to go to next spike
-get raster plot
 display proper seconds unit with time
 
-input file name
-process voltage data
-return raster plot
 
 all important data from file
 file name
-voltage
+voltage plot of y for each time unit
 spike arraylist
-raster
+each spike has times for start, peaks, and end
+has voltage values for peaks
+raster plot for first peak

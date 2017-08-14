@@ -35,9 +35,9 @@ public class XYLineChart_AWT extends ApplicationFrame {
         Color.MAGENTA
     };
 
-    //takes voltageFile and shows the voltage, spikes (only one step per spike), and data as visual functions
-    public XYLineChart_AWT(voltageFile file, int step) {
-        this(file.getName(), voltageFile.xString, voltageFile.yString, file.getData());
+    //takes VoltageFile and shows the voltage, spikes (only one step per spike), and data as visual functions
+    public XYLineChart_AWT(VoltageFile file, int step) {
+        this(file.getName(), VoltageFile.xString, VoltageFile.yString, file.getData());
         //have to add voltage and spikes as XYFunctions
 
     }

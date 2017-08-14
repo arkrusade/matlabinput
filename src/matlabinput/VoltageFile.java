@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author Justin Lee
  */
-public class voltageFile {
+public class VoltageFile {
 
     final static String yString = "Voltage";
     final static String xString = "Time";
@@ -32,7 +32,7 @@ public class voltageFile {
     private ArrayList<Spike> spikes;
     private ArrayList<XYFunction> data = new ArrayList<>(0);
 
-    public voltageFile(String name, double samplesPerSecond, double[] voltages) {
+    public VoltageFile(String name, double samplesPerSecond, double[] voltages) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         double[][] x = new double[2][voltages.length];
@@ -44,22 +44,22 @@ public class voltageFile {
         this.findSpikes();
     }
 //
-//    public voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages) {
+//    public VoltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages) {
 //        this(name, samplesPerSecond, xSet, voltages, new ArrayList<>(0), new ArrayList<>(0));
 //        this.findSpikes();
 //    }
 
-//    public voltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
+//    public VoltageFile(String name, double samplesPerSecond, double[] voltages, ArrayList<Spike> spikes) {
 //        this.name = name;
 //        this.samplesPerSecond = samplesPerSecond;
 //        this.voltages = voltages;
 //        this.spikes = spikes;
 //    }
-    private voltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> data) throws InstantiationException {
-        this(name, samplesPerSecond, new XYFunction(voltageFile.yString, xSet, voltages), spikes, data);
+    private VoltageFile(String name, double samplesPerSecond, double[] xSet, double[] voltages, ArrayList<Spike> spikes, ArrayList<XYFunction> data) throws InstantiationException {
+        this(name, samplesPerSecond, new XYFunction(VoltageFile.yString, xSet, voltages), spikes, data);
     }
 
-    public voltageFile(String name, double samplesPerSecond, XYFunction voltageFunction, ArrayList<Spike> spikes, ArrayList<XYFunction> data) {
+    public VoltageFile(String name, double samplesPerSecond, XYFunction voltageFunction, ArrayList<Spike> spikes, ArrayList<XYFunction> data) {
         this.name = name;
         this.samplesPerSecond = samplesPerSecond;
         this.voltageFunction = voltageFunction;
@@ -69,24 +69,24 @@ public class voltageFile {
 
 //TODO: check these for errors when input from mfr file
     //ie: that voltage and Samp_Rate exist, and are proper variable types
-    public static voltageFile fromFile(File file) throws IOException {
+    public static VoltageFile fromFile(File file) throws IOException {
         MatFileReader mfr = new MatFileReader(file);
         MLStructure x = (MLStructure) mfr.getContent().get("x");
         MLDouble voltMAT = (MLDouble) x.getField("voltage");
         MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
         double samplesPerSecond = sampleRate.getArray()[0][0];
         double[] voltages = voltMAT.getArray()[0];
-        return new voltageFile(file.getName(), samplesPerSecond, voltages);
+        return new VoltageFile(file.getName(), samplesPerSecond, voltages);
     }
 
-    public static voltageFile fromString(String fileName) throws IOException {
+    public static VoltageFile fromString(String fileName) throws IOException {
         MatFileReader mfr = new MatFileReader(fileName);
         MLStructure x = (MLStructure) mfr.getContent().get("x");
         MLDouble voltMAT = (MLDouble) x.getField("voltage");
         MLDouble sampleRate = (MLDouble) x.getField("Samp_Rate");
         double samplesPerSecond = sampleRate.getArray()[0][0];
         double[] voltages = voltMAT.getArray()[0];
-        return new voltageFile(fileName, samplesPerSecond, voltages);
+        return new VoltageFile(fileName, samplesPerSecond, voltages);
     }
 
     public String getName() {
@@ -147,13 +147,13 @@ public class voltageFile {
                 y10[i / 10] = voltages[i];
                 deltas10[i / 10] = d10;
                 if (step == 4 && (d10 > 0 == upwards)) {//end of second peak
-                    //because second peak isnt as slope, it does not need large diff
+                    //because second peak isnt as slope, it does not need large diff, but a large trend diff
                     step = 5;
                 } else if (step == 5 && (d10 < 0 == upwards)) {//end of spike
                     step = 0;
 
                     spiked = false;
-                    findingSpikes.get(findingSpikes.size() - 1).setStep(3, i);
+                    newSpike.setStep(3, i);
                     if (peakTimes[0] > peakTimes[1]) {
                         int t = peakTimes[0];
                         peakTimes[0] = peakTimes[1];
@@ -211,7 +211,7 @@ public class voltageFile {
 //
 //            data.add(new XYFunction("delta10s", x10, deltas10));
         } catch (InstantiationException ex) {
-            Logger.getLogger(voltageFile.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VoltageFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

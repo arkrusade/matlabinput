@@ -31,9 +31,9 @@ public class Matlabinput {
      */
     public static void main(String[] args) {
         try {
-            voltageFile first = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-22PM.mat");
-            voltageFile second = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-28PM.mat");
-            voltageFile third = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
+            VoltageFile first = VoltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-22PM.mat");
+            VoltageFile second = VoltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-28PM.mat");
+            VoltageFile third = VoltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
 
             XYLineChart_AWT chart = new XYLineChart_AWT(first, 1);
 
