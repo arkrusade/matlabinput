@@ -2,19 +2,13 @@ package matlabinput;
 
 import java.awt.Color;
 import java.awt.BasicStroke;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.sql.rowset.spi.SyncProvider;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.PlotOrientation;
@@ -24,7 +18,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 public class XYLineChart_AWT extends ApplicationFrame {
 
     private String title, xLabel, yLabel;
-    private ArrayList<XYFunction> data = new ArrayList<>(0);//list of datasets
+    private ArrayList<XYFunction> functions = new ArrayList<>(0);//list of datasets
     private XYLineAndShapeRenderer renderer;
     static Color[] defaultColors = {
         Color.RED,
@@ -35,10 +29,35 @@ public class XYLineChart_AWT extends ApplicationFrame {
         Color.MAGENTA
     };
 
+    public enum chartType {
+        SPIKE("Spikes over time", "Chart number", "Time"), VOLTAGE("Voltage over time", "Voltage", "Time");
+
+        String title, xString, yString;
+
+        chartType(String title, String x, String y) {
+            this.title = title;
+            xString = x;
+            yString = y;
+        }
+    }
+
     //takes voltageFile and shows the voltage, spikes (only one step per spike), and data as visual functions
-    public XYLineChart_AWT(voltageFile file, int step) {
-        this(file.getName(), voltageFile.xString, voltageFile.yString, file.getData());
-        //have to add voltage and spikes as XYFunctions
+    //TODO: chart should not be reliant on voltagefile
+    public XYLineChart_AWT(voltageFile file, chartType type) {
+        this(file.getName(), type.xString, type.yString, new ArrayList<>());
+        //TODO: maybe? have to add voltage and spikes as XYFunctions
+
+    }
+
+    public XYLineChart_AWT(String title, String xLabel, String yLabel, double[][] xy) throws InstantiationException {
+        super(title);
+
+        XYFunction init = new XYFunction(yLabel + " vs." + xLabel, xy[0], xy[1]);
+        functions.add(init);
+
+        this.title = title;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
 
     }
 
@@ -48,7 +67,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
             throw new InstantiationException("X set:" + xLabel + " must be the same size as Y set:" + yLabel + ".");
         }
         XYFunction init = new XYFunction(yLabel + " vs." + xLabel, x, y);
-        data.add(init);
+        functions.add(init);
 
         this.title = title;
         this.xLabel = xLabel;
@@ -58,7 +77,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
     public XYLineChart_AWT(String title, String xLabel, String yLabel, ArrayList<XYFunction> set) {
         super(title);
-        data = set;
+        functions = set;
         this.xLabel = xLabel;
         this.yLabel = yLabel;
 
@@ -82,6 +101,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
         } else {
             plot.setRenderer(defaultRenderer(this));
         }
+        this.setExtendedState(MAXIMIZED_BOTH);
         setContentPane(chartPanel);
     }
 
@@ -94,7 +114,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
     }
 
     public void addXYSet(XYFunction set) {
-        data.add(set);
+        functions.add(set);
     }
 
     public String getxLabel() {
@@ -114,27 +134,28 @@ public class XYLineChart_AWT extends ApplicationFrame {
     }
 
     public void addData(XYFunction function) {
-        data.add(function);
+        functions.add(function);
     }
 
     public void addData(int index, XYFunction function) {
-        data.add(index, function);
+        functions.add(index, function);
     }
 
     public void addData(XYFunction... functions) {
-        this.data.addAll(Arrays.asList(functions));
-    }
-    public void addData(int index, XYFunction... functions) {
-        this.data.addAll(index, Arrays.asList(functions));
+        this.functions.addAll(Arrays.asList(functions));
     }
 
-    public void setData(ArrayList<XYFunction> data) {
-        this.data = data;
+    public void addData(int index, XYFunction... functions) {
+        this.functions.addAll(index, Arrays.asList(functions));
+    }
+
+    public void setFunctions(ArrayList<XYFunction> functions) {
+        this.functions = functions;
     }
 
     private XYDataset getXYDataset() {
         final XYSeriesCollection dataset = new XYSeriesCollection();
-        data.stream().forEach((dataSeries) -> {
+        functions.stream().forEach((dataSeries) -> {
             dataset.addSeries(dataSeries.toSeries());
         });
         return dataset;
@@ -142,10 +163,10 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
     private static XYLineAndShapeRenderer defaultRenderer(XYLineChart_AWT instance) {
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        for (int i = 0; i < instance.data.size(); i++) {
-            renderer.setSeriesShape(i, instance.data.get(i).getDotShape());
-            renderer.setSeriesPaint(i, instance.data.get(i).getLineColor() != null ? instance.data.get(i).getLineColor() : defaultColors[i % defaultColors.length]);
-            renderer.setSeriesStroke(i, new BasicStroke(instance.data.get(i).getLineSize()));
+        for (int i = 0; i < instance.functions.size(); i++) {
+            renderer.setSeriesShape(i, instance.functions.get(i).getDotShape());
+            renderer.setSeriesPaint(i, instance.functions.get(i).getLineColor() != null ? instance.functions.get(i).getLineColor() : defaultColors[i % defaultColors.length]);
+            renderer.setSeriesStroke(i, new BasicStroke(instance.functions.get(i).getLineSize()));
         }
         return renderer;
     }
