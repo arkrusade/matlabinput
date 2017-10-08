@@ -2,19 +2,14 @@ package matlabinput;
 
 import java.awt.Color;
 import java.awt.BasicStroke;
-import java.awt.Shape;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
-import javax.sql.rowset.spi.SyncProvider;
+import javax.swing.JFrame;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.xy.XYDataset;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.plot.PlotOrientation;
@@ -26,7 +21,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
     private String title, xLabel, yLabel;
     private ArrayList<XYFunction> data = new ArrayList<>(0);//list of datasets
     private XYLineAndShapeRenderer renderer;
-    static Color[] defaultColors = {
+    private static Color[] defaultColors = {
         Color.RED,
         Color.ORANGE,
         Color.YELLOW,
@@ -77,12 +72,13 @@ public class XYLineChart_AWT extends ApplicationFrame {
         final XYPlot plot = xylineChart.getXYPlot();
 
         if (renderer != null) {
-
             plot.setRenderer(renderer);
         } else {
             plot.setRenderer(defaultRenderer(this));
         }
+        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         setContentPane(chartPanel);
+        this.setVisible(true);
     }
 
     public void setRenderer(XYLineAndShapeRenderer newRenderer) {

@@ -37,8 +37,6 @@ public class XYFunction {
         this.lineSize = lineSize;
     }
 
-    
-
     public XYFunction(String name, double[] x, double[] y) throws InstantiationException {
         if (x.length != y.length) {
             throw new InstantiationException("X set must be the same size as Y set:" + name + ".");
@@ -122,5 +120,4 @@ public class XYFunction {
     public void setLineSize(float lineSize) {
         this.lineSize = lineSize;
     }
-    
 }

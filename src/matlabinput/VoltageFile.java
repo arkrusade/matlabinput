@@ -115,16 +115,16 @@ public class VoltageFile {
 
     private void findSpikes() {
         double[] voltages = getVoltages();
-        double[] xs = new double[voltages.length];//stores time values (x-dim)
-        double[] x10 = new double[voltages.length / 10];//stores every tenth time value
-        double[] y10 = new double[voltages.length / 10];//stores every tenth voltage value
-
-        double[] deltas = new double[voltages.length];//stores every delta-y
-        double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
+//        double[] xs = new double[voltages.length];//stores time values (x-dim)
+//        double[] x10 = new double[voltages.length / 10];//stores every tenth time value
+//        double[] y10 = new double[voltages.length / 10];//stores every tenth voltage value
+//
+//        double[] deltas = new double[voltages.length];//stores every delta-y
+//        double[] deltas10 = new double[voltages.length / 10];//stores every tenth delta-y
         ArrayList<Spike> findingSpikes = new ArrayList();//stores every spike, with array of important times for spike
 
-        double[] sigdiffs = new double[voltages.length];
-        double[] steps = new double[voltages.length];
+//        double[] sigdiffs = new double[voltages.length];
+//        double[] steps = new double[voltages.length];
 //            double[] isSpiked = new double[voltages.length];
         boolean spiked = false;
         boolean upwards = false;
@@ -137,15 +137,15 @@ public class VoltageFile {
         //when step is this value: 
         //0 is not spike, 1 is spike started, 2 is first peak, 3 is from peak to peak, 4 is second peak, 5 is from peak to reverse
         for (int i = 1; i < voltages.length; i++) {
-            xs[i] = i;
+//            xs[i] = i;
             d = voltages[i] - voltages[i - 1];
             absD = Math.abs(d);
-            deltas[i] = d;
+//            deltas[i] = d;
             if (i % 10 == 0) {//in tenth time value
                 d10 = voltages[i] - voltages[i - 10];
-                x10[i / 10] = i;
-                y10[i / 10] = voltages[i];
-                deltas10[i / 10] = d10;
+//                x10[i / 10] = i;
+//                y10[i / 10] = voltages[i];
+//                deltas10[i / 10] = d10;
                 if (step == 4 && (d10 > 0 == upwards)) {//end of second peak
                     //because second peak isnt as slope, it does not need large diff, but a large trend diff
                     step = 5;
@@ -168,7 +168,7 @@ public class VoltageFile {
             }
 
             if (absD >= .005) {//if diff is big (either direction)
-                sigdiffs[i] = .15 * d / absD;
+//                sigdiffs[i] = .15 * d / absD;
                 if (step == 0) {//to go to step 1, must have large diff and not in spike
                     spiked = true;
                     newSpike = new Spike();
@@ -199,20 +199,20 @@ public class VoltageFile {
                 }
             }
 
-            steps[i] = (double) step / 50.0;
+//            steps[i] = (double) step / 50.0;
 //                isSpiked[i] = (spiked ? 0.1 : 0);
         }
         this.spikes = findingSpikes;
-        try {
-            data.add(new XYFunction("steps", xs, steps));
+//        try {
+//            data.add(new XYFunction("steps", xs, steps));
 //            data.add(new XYFunction("deltas", xs, deltas));
 //            data.add(new XYFunction("sigdiffs", xs, sigdiffs));
 //            data.add(new XYFunction("x10s", x10, y10));
 //
 //            data.add(new XYFunction("delta10s", x10, deltas10));
-        } catch (InstantiationException ex) {
-            Logger.getLogger(VoltageFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//        } catch (InstantiationException ex) {
+//            Logger.getLogger(VoltageFile.class.getName()).log(Level.SEVERE, null, ex);
+//        }
     }
 
     public XYFunction getSpikeFunction(int step, double level) {
