@@ -43,7 +43,7 @@ public class XYLineChart_AWT extends ApplicationFrame {
 
     //takes voltageFile and shows the voltage, spikes (only one step per spike), and data as visual functions
     //TODO: chart should not be reliant on voltagefile
-    public XYLineChart_AWT(voltageFile file, chartType type) {
+    public XYLineChart_AWT(VoltageFile file, chartType type) {
         this(file.getName(), type.xString, type.yString, new ArrayList<>());
         //TODO: maybe? have to add voltage and spikes as XYFunctions
 

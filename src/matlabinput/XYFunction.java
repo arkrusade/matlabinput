@@ -8,9 +8,7 @@ package matlabinput;
 import java.awt.Color;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
-import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  *
