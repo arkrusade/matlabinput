@@ -5,19 +5,10 @@
  */
 package matlabinput;
 
-import com.jmatio.io.MatFileReader;
-import com.jmatio.types.MLArray;
-import com.jmatio.types.MLDouble;
-import com.jmatio.types.MLStructure;
 import java.awt.geom.Rectangle2D;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.ui.RefineryUtilities;
 
 /**
@@ -31,37 +22,44 @@ public class Matlabinput {
      */
     public static void main(String[] args) {
         try {
-            voltageFile first = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-22PM.mat");
+//            GraphManager.getInstance().addVoltageFileByPath("L1C1SPOT-300um1sec100percent-02-15-22PM.mat");
+//            GraphManager.getInstance().addVoltageFileByPath("L1C1SPOT-300um1sec100percent-02-15-28PM.mat");
+//            GraphManager.getInstance().addVoltageFileByPath("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
+//            GraphManager.getInstance().displayChart();
+//        try {
+//            voltageFile first = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-22PM.mat");
             voltageFile second = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-28PM.mat");
-            voltageFile third = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
-
-            XYLineChart_AWT chart = new XYLineChart_AWT(first, 1);
-
-            XYFunction spikes = first.getSpikeFunction(3, .9);
+//            voltageFile third = voltageFile.fromString("L1C1SPOT-300um1sec100percent-02-15-34PM.mat");
+//
+            XYLineChart_AWT chart = new XYLineChart_AWT(second, XYLineChart_AWT.chartType.VOLTAGE);
+//
+            XYFunction spikes = second.getSpikeFunction(3, .9);
             spikes.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
             spikes.setLineSize(0);
 
-            XYFunction spikes1 = first.getSpikeFunction(1, .5);
+            XYFunction spikes1 = second.getSpikeFunction(1, .5);
             spikes1.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
             spikes1.setLineSize(0);
 
-            XYFunction spikes2 = first.getSpikeFunction(2, .7);
+            XYFunction spikes2 = second.getSpikeFunction(2, .7);
             spikes2.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
             spikes2.setLineSize(0);
 
-            XYFunction offset = first.getSpikeFunction(0, .3);
+            XYFunction offset = second.getSpikeFunction(0, .3);
             offset.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));
             offset.setLineSize(0);
-
-            chart.addData(0, first.getVoltageFunction(), spikes, spikes1, spikes2, offset);
-
+//
+            chart.addData(second.getVoltageFunction(), spikes, spikes1, spikes2, offset);
+//
             chart.prepareChart();
 
-            chart.setSize(new java.awt.Dimension(1920, 1080));
             RefineryUtilities.centerFrameOnScreen(chart);
             chart.setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+        } catch (IOException ex) {
+            Logger.getLogger(Matlabinput.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
