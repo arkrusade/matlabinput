@@ -42,6 +42,8 @@ public class GraphManager {
     }
 
     //TODO: change to only adding file to voltageFileList
+    //TODO: everything
+    //TODO: program exits when closing chart
     public void addVoltageFile(VoltageFile file) {
         XYFunction spikes = file.getSpikeFunction(1, (functionList.size() + 1) / 2);//adds to end of list (top of graph)
         spikes.setDotShape(new Rectangle2D.Double(-2, -20, 4, 40));//sets spike function to rasta mark shapes
