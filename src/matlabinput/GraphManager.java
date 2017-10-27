@@ -7,11 +7,8 @@ package matlabinput;
 
 import java.awt.geom.Rectangle2D;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jfree.ui.RefineryUtilities;
 
 /**
